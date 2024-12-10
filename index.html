@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>Gestion WireGuard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #2c3e50;
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        button {
+            background: #2980b9;
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+        button:hover {
+            background: #3498db;
+        }
+        .message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 5px;
+            display: none;
+        }
+        .message.success {
+            background: #dff0d8;
+            color: #3c763d;
+        }
+        .message.error {
+            background: #f2dede;
+            color: #a94442;
+        }
+        .config-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #eef;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            display: none;
+        }
+        .actions {
+            margin-bottom: 1rem;
+        }
+        footer {
+            text-align: center;
+            color: #777;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion du Serveur WireGuard</h1>
+    </header>
+    <main>
+        <h2>Contrôle du service</h2>
+        <div class="actions">
+            <button id="startBtn">Démarrer WireGuard</button>
+            <button id="stopBtn">Arrêter WireGuard</button>
+        </div>
+
+        <div class="message" id="messageBox"></div>
+
+        <h3>Configuration Peer1 :</h3>
+        <div class="config-box" id="configBox"></div>
+    </main>
+    <footer>
+        <p>Exemple d'interface simple. Vous pouvez améliorer le style selon vos besoins.</p>
+    </footer>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const messageBox = document.getElementById('messageBox');
+        const configBox = document.getElementById('configBox');
+
+        function showMessage(type, text) {
+            messageBox.className = "message " + type;
+            messageBox.textContent = text;
+            messageBox.style.display = 'block';
+        }
+
+        function clearMessages() {
+            messageBox.style.display = 'none';
+        }
+
+        function clearConfig() {
+            configBox.style.display = 'none';
+            configBox.textContent = '';
+        }
+
+        startBtn.addEventListener('click', function() {
+            clearMessages();
+            clearConfig();
+            fetch('http://192.168.56.105/start-wireguard', {
+                method: 'POST',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // Erreur côté serveur
+                    return response.json().then(data => {
+                        throw new Error(data.error || "Erreur inconnue");
+                    });
+                }
+                // Réponse OK, texte brut attendu
+                return response.text();
+            })
+            .then(configText => {
+                showMessage('success', "WireGuard démarré avec succès.");
+                configBox.textContent = configText;
+                configBox.style.display = 'block';
+            })
+            .catch(err => {
+                showMessage('error', "Impossible de démarrer WireGuard: " + err.message);
+            });
+        });
+
+        stopBtn.addEventListener('click', function() {
+            clearMessages();
+            clearConfig();
+            fetch('http://192.168.56.105/stop-wireguard', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showMessage('error', "Erreur lors de l'arrêt: " + data.error);
+                } else {
+                    showMessage('success', data.message);
+                }
+            })
+            .catch(err => {
+                showMessage('error', "Erreur de communication avec le serveur: " + err.message);
+            });
+        });
+    </script>
+</body>
+</html>
