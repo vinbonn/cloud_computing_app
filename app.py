@@ -7,18 +7,18 @@ app = Flask(__name__)
 @app.route('/start-wireguard', methods=['POST'])
 def start_wireguard():
     try:
-        # Lancer Docker Compose
+        # Lancer Docker Compose depuis /opt/myapp
         result = subprocess.run(
             ["docker-compose", "up", "-d"],
-            cwd="./",
+            cwd="/opt/myapp",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
         if result.returncode != 0:
             return jsonify({"error": result.stderr.decode()}), 500
 
-        # Chemin du fichier de configuration généré
-        config_path = "/opt/wireguard-server/config/peer1/peer1.conf"
+        # Chemin du fichier de configuration généré (ajusté pour être sous /opt/myapp)
+        config_path = "/opt/myapp/wireguard-server/config/peer1/peer1.conf"
 
         # Vérifier si le fichier existe
         if not os.path.exists(config_path):
@@ -39,7 +39,7 @@ def stop_wireguard():
     try:
         result = subprocess.run(
             ["docker-compose", "down"],
-            cwd="./",
+            cwd="/opt/myapp",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
