@@ -5,8 +5,8 @@ import os
 
 app = Flask(__name__)
 
-# Configure CORS to allow only requests from 10.10.10.12
-CORS(app, resources={r"/*": {"origins": "http://10.10.10.12"}})
+# Autoriser tous les CORS
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/start-wireguard', methods=['POST'])
 def start_wireguard():
@@ -32,10 +32,8 @@ def start_wireguard():
         with open(config_path, "r") as config_file:
             config_content = config_file.read()
 
-        # Retourner le contenu du fichier avec les en-têtes CORS
-        response = Response(config_content, mimetype="text/plain")
-        response.headers["Access-Control-Allow-Origin"] = "http://10.10.10.12"
-        return response, 200
+        # Retourner le contenu du fichier
+        return Response(config_content, mimetype="text/plain"), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
