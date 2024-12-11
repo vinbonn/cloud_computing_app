@@ -9,12 +9,12 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/London
-      - SERVERURL=autp #optional
+      - TZ=Europe/Paris
+      - SERVEURURL=10.10.10.11 #optional
       - SERVERPORT=51820 #optional
       - PEERS=1 #optional
       - PEERDNS=auto #optional
-      - INTERNAL_SUBNET=10.10.10.0/24 #optional
+      - INTERNAL_SUBNET=10.13.13.0 #optional
     volumes:
       - /opt/wireguard-server/config:/config
       - /lib/modules:/lib/modules
