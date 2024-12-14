@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Autoriser tous les CORS
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/start-wireguard', methods=['POST'])
+@app.route('/api/start-wireguard', methods=['POST'])
 def start_wireguard():
     try:
         # Lancer Docker Compose depuis /opt/myapp
@@ -38,7 +38,7 @@ def start_wireguard():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/stop-wireguard', methods=['POST'])
+@app.route('/api/stop-wireguard', methods=['POST'])
 def stop_wireguard():
     try:
         result = subprocess.run(
