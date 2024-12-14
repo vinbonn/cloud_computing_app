@@ -124,7 +124,7 @@
             startBtn.addEventListener("click", function () {
                 clearMessages();
                 clearConfig();
-                fetch("http://148.60.225.45/start-wireguard", {
+                fetch("/api/start-wireguard", {
                     method: "POST",
                 })
                     .then((response) => {
@@ -158,7 +158,7 @@
             stopBtn.addEventListener("click", function () {
                 clearMessages();
                 clearConfig();
-                fetch("http://148.60.225.45/stop-wireguard", {
+                fetch("/api/stop-wireguard", {
                     method: "POST",
                 })
                     .then((response) => response.json())
